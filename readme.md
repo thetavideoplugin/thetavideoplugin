@@ -18,7 +18,9 @@ More detailed instructions are over on the [website.](https://thetavideoplugin.c
 
 == Installation from the git repo == 
 Clone the repo in the /wp-content/plugins/ directory.
+
 Run `npm install`
+
 Run `npm run build`
 
 Activate the plugin in the plugin menu on your Wordpress site. 
