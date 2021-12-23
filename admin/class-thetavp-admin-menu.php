@@ -17,13 +17,13 @@ class Thetavp_Admin_Menu {
 	public function __construct() {
 		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp-database.php";
 		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp.php";
-		require_once plugin_dir_path(__FILE__ ) . "../includes/class-thetavp-api.php";
+		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp-api.php";
 		$thetavp_database  = new Thetavp_Database();
 		$this->database    = $thetavp_database;
 		$this->video_table = $thetavp_database->get_theta_videos_table();
 		$this->key_table   = $thetavp_database->get_theta_keys_table();
 		$this->thetavp     = new Thetavp();
-		$this->api = new Thetavp_Api();
+		$this->api         = new Thetavp_Api();
 	}
 
 	/**
@@ -33,81 +33,93 @@ class Thetavp_Admin_Menu {
 	 */
 	public function add_thetavp_menu() {
 		return add_menu_page(
-				$this->thetavp->get_plugin_name(),
-				$this->thetavp->get_plugin_name(),
-				"manage_options",
-				$this->thetavp->get_slug(),
-				array( $this, 'show_admin_page' ),
-				'dashicons-schedule',
-				11
+			$this->thetavp->get_plugin_name(),
+			$this->thetavp->get_plugin_name(),
+			"manage_options",
+			$this->thetavp->get_slug(),
+			array( $this, 'show_admin_page' ),
+			'dashicons-schedule',
+			11
 		);
 
 	}
 
 
+	/**
+	 * Render the admin page
+	 */
 	public function show_admin_page() {
 		$keys = $this->database->get_keys();
 
-		if ($this->api->is_localhost()){
+		if ( $this->api->is_localhost() ) {
 			?>
-				<p class="warn">Running from localhost is not yet supported.</p>
-				<?php
+            <p class="warn">Running from localhost is not yet supported.</p>
+			<?php
 		}
 		?>
-		<div class="wrap">
+        <div class="wrap">
 			<?php
 			if ( isset( $_GET['status'] ) && $_GET['status'] == 1 ) {
 				?><p>Updated successfully.</p> <?php
 			}
 			?>
 
-			<h2>Keys</h2>
+            <h2>Keys</h2>
 
-			<p>Get your API key and API secret from <a href="https://www.thetavideoapi.com/">the Theta Video API site.</a></p>
+            <p>Get your API key and API secret from <a href="https://www.thetavideoapi.com/">the Theta Video API
+                    site.</a></p>
 
 
-			<form method="POST" action="admin-post.php">
-				<input type="hidden" name="action" value="thetavp_save_keys">
+            <form method="POST" action="admin-post.php">
+                <input type="hidden" name="action" value="thetavp_save_keys">
 				<?php wp_nonce_field( 'thetavp_keys_verify' ); ?>
 				<?php if ( ! empty( $keys ) ) {
 					?>
-					<div id="key">
-						<label for="api_key">Api key</label><br>
-						<input type='text' id="api_key" name="api_key" maxlength="32" value="<?php echo $keys['key'] ?>"> <br>
-					</div>
-					<div id="secret">
-						<label for="api_secret">Api secret</label><br>
-						<input type="text" id="api_secret" name="api_secret" maxlength="32" value="<?php echo $keys['secret'] ?>">
-					</div>
+                    <div id="key">
+                        <label for="api_key">Api key</label><br>
+                        <input type='text' id="api_key" name="api_key" maxlength="32"
+                               value="<?php echo $keys['key'] ?>"> <br>
+                    </div>
+                    <div id="secret">
+                        <label for="api_secret">Api secret</label><br>
+                        <input type="text" id="api_secret" name="api_secret" maxlength="32"
+                               value="<?php echo $keys['secret'] ?>">
+                    </div>
 				<?php } else { ?>
-					<div id="key">
-						<label for="api_key">Api key</label><br>
-						<input type='text' id="api_key" maxlength="32" name="api_key"> <br>
-					</div>
-					<div id="secret">
-						<label for="api_secret">Api secret</label><br>
-						<input type="text" id="api_secret" maxlength="32" name="api_secret">
-					</div>
+                    <div id="key">
+                        <label for="api_key">Api key</label><br>
+                        <input type='text' id="api_key" maxlength="32" name="api_key"> <br>
+                    </div>
+                    <div id="secret">
+                        <label for="api_secret">Api secret</label><br>
+                        <input type="text" id="api_secret" maxlength="32" name="api_secret">
+                    </div>
 				<?php } ?>
-				<br>
-				<button type="submit">Save</button>
-			</form>
+                <br>
+                <button type="submit">Save</button>
+            </form>
 
-		</div>
+        </div>
 
-		<hr>
-		<h2>Videos</h2>
+        <hr>
+        <h2>Videos</h2>
 		<?php
 
 		$videos = $this->database->get_videos();
-		if(empty($videos)){
+		if ( empty( $videos ) ) {
 			?> <p>No videos have been uploaded to the API yet.</p>  <?php
 
 		} else {
-			?> <table><tr><th>ID</th><th>Theta Video ID</th><th>Status</th></tr> <?php
+			?>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Theta Video ID</th>
+                    <th>Status</th>
+                </tr> <?php
 
 
-			foreach($videos as $video){
+			foreach ( $videos as $video ) {
 				echo "<tr><td>$video->id</td><td>$video->theta_video_id</td><td>$video->status</td></tr>";
 			}
 			echo "</table>";
@@ -130,8 +142,6 @@ class Thetavp_Admin_Menu {
 
 		wp_redirect( admin_url( 'admin.php?page=thetavp' ) );
 	}
-
-
 
 
 }
