@@ -334,5 +334,4 @@ class Thetavp_Api {
 		return $url;
 	}
 
-
 }
