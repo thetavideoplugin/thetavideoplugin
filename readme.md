@@ -3,7 +3,7 @@
 == Description ==
 A Wordpress plugin for the Theta Video API. See [the site for more info](https://thetavideoplugin.com/)
 
-Feel free to join [Discord](https://discord.gg/jzWfRFAArZ) or file an issue here on Github.
+Feel free to join [Discord](https://discord.gg/hArCMR9mky) or file an issue here on Github.
 
 == Installation ==
 
