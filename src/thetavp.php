@@ -1,5 +1,5 @@
 <?php
-
+namespace Thetavp\thetavp;
 /**
  * Class containing some constants used in other places
  */
@@ -49,6 +49,5 @@ class Thetavp {
 	public function get_slug() {
 		return $this->slug;
 	}
-
 
 }

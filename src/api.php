@@ -1,6 +1,10 @@
 <?php
+namespace Thetavp\Api;
 
-class Thetavp_Api {
+use Thetavp\database\Database;
+use WP_Error;
+
+class Api {
 	private $namespace;
 	private $plugin_name;
 	private $version;
@@ -13,14 +17,14 @@ class Thetavp_Api {
 	 * @param $plugin_name string Plugin name
 	 */
 	public function __constructor( $plugin_name ) {
-		require_once "class-thetavp-database.php";
+		require_once "database.php";
 		$this->plugin_name     = $plugin_name;
 		$this->version         = THETAVP_VERSION;
 		$this->namespace       = $plugin_name . '/v' . $this->version;
 		$this->plugin_dir_path = $this->plugin_dir_path( dirname( __FILE__ ) );
 
 
-		$this->db          = new Thetavp_Database();
+		$this->db          = Database::getInstance();
 		$this->api_version = 'v1';
 
 
@@ -51,9 +55,7 @@ class Thetavp_Api {
 	 * @return void|WP_Error
 	 */
 	public function get_videos( $request ) {
-		require_once $this->plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
-		$db     = new Thetavp_Database();
-		$result = $db->get_videos();
+		$result = $this->db->get_videos();
 
 		if ( empty( $result ) ) {
 			return new WP_Error( 'no videos found', 'no videos have been found', array( 'status' => 404 ) );
@@ -67,12 +69,9 @@ class Thetavp_Api {
 	 * @return false|string|WP_Error
 	 */
 	public function get_video( $request ) {
-		require_once plugin_dir_path( __FILE__ ) . "class-thetavp-database.php";
-		$db = new Thetavp_Database();
-
 		$id = $request['id'];
 
-		$result = $db->get_video( $id );
+		$result = $this->db->get_video( $id );
 
 		if ( empty( $result ) ) {
 			return new WP_Error( 'not_found', 'the video has not been found', array( 'status' => 404 ) );
@@ -87,10 +86,8 @@ class Thetavp_Api {
 	 * @return array|false containing the upload url
 	 */
 	public function get_upload_url() {
-		require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
 		$url  = "https://api.thetavideoapi.com/upload";
-		$db   = new Thetavp_Database();
-		$keys = $db->get_keys();
+		$keys = $this->db->get_keys();
 		if ( empty( $keys ) ) {
 			return false;
 		}
@@ -128,10 +125,8 @@ class Thetavp_Api {
 	 * @return array|false  video status. Returns false on failure.
 	 */
 	function get_video_status( $theta_video_id ) {
-		require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
 		$url  = "https://api.thetavideoapi.com/video/" . $theta_video_id;
-		$db   = new Thetavp_Database();
-		$keys = $db->get_keys();
+		$keys = $this->db->get_keys();
 		if ( empty( $keys ) ) {
 			return false;
 		}
@@ -176,10 +171,8 @@ class Thetavp_Api {
 			return;
 		}
 		$video_url = $this->change_http_to_https($video_url);
-		require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
 		$url  = "https://api.thetavideoapi.com/video";
-		$db   = new Thetavp_Database();
-		$keys = $db->get_keys();
+		$keys = $this->db->get_keys();
 		if ( empty( $keys ) ) {
 			error_log("No keys have been set");
 			return;
@@ -266,10 +259,8 @@ class Thetavp_Api {
 	 */
 
 	public function transcode_upload( $upload_id ) {
-		require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
 		$url  = "https://api.thetavideoapi.com/video";
-		$db   = new Thetavp_Database();
-		$keys = $db->get_keys();
+		$keys = $this->db->get_keys();
 		if ( empty( $keys ) ) {
 			return;
 		}

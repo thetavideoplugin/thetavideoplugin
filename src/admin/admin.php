@@ -1,11 +1,15 @@
 <?php
+namespace Thetavp\admin;
+use Thetavp\Api\Api;
+use Thetavp\database\Database;
+use Thetavp\thetavp\Thetavp;
 
 /**
  * Class containing all the admin related functions.
  *
  * This class contains the code for registering the menu, the menu itself and the saving of changed settings.
  */
-class Thetavp_Admin_Menu {
+class Admin{
 	private $thetavp;
 	private $database;
 	private $api;
@@ -15,15 +19,11 @@ class Thetavp_Admin_Menu {
 	 * It sets the internal private variables.
 	 */
 	public function __construct() {
-		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp-database.php";
-		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp.php";
-		require_once plugin_dir_path( __FILE__ ) . "../includes/class-thetavp-api.php";
-		$thetavp_database  = new Thetavp_Database();
-		$this->database    = $thetavp_database;
-		$this->video_table = $thetavp_database->get_theta_videos_table();
-		$this->key_table   = $thetavp_database->get_theta_keys_table();
+		$this->database    = Database::getInstance();
+		$this->video_table = $this->database->get_theta_videos_table();
+		$this->key_table   = $this->database->get_theta_keys_table();
 		$this->thetavp     = new Thetavp();
-		$this->api         = new Thetavp_Api();
+		$this->api         = new Api();
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Thetavp_Admin_Menu {
                     site.</a></p>
 
 
-            <form method="POST" action="admin-post.php">
+            <form method="POST" action="admin-post.php" autocomplete="off">
                 <input type="hidden" name="action" value="thetavp_save_keys">
 				<?php wp_nonce_field( 'thetavp_keys_verify' ); ?>
 				<?php if ( ! empty( $keys ) ) {
