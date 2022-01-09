@@ -1,12 +1,13 @@
 <?php
 
+namespace Thetavp\database;
 /**
  * The class used for all the database interactions
  */
-
-class Thetavp_Database {
+class Database {
 	private $theta_video_table;
 	private $theta_keys_table;
+	private static $instance = null;
 
 	/**
 	 * Constructor which sets the local private variables. These are used to access the tables later on.
@@ -15,6 +16,14 @@ class Thetavp_Database {
 		global $wpdb;
 		$this->theta_video_table = $wpdb->prefix . "thetavp_videos";
 		$this->theta_keys_table  = $wpdb->prefix . "thetavp_apikeys";
+	}
+
+	public static function getInstance() {
+		if ( self::$instance == null ) {
+			self::$instance = new ThetavpDatabase();
+		}
+
+		return self::$instance;
 	}
 
 	/**
@@ -106,6 +115,7 @@ class Thetavp_Database {
 
 	/**
 	 * Save the api key and secret to the database
+	 *
 	 * @param $key string api key
 	 * @param $secret string api secret
 	 *
@@ -120,6 +130,7 @@ class Thetavp_Database {
 
 	/**
 	 * Stores a video in the database
+	 *
 	 * @param $id int library ID
 	 * @param $theta_video_id string ID given by the theta video api
 	 * @param $state string current state
@@ -142,6 +153,7 @@ class Thetavp_Database {
 
 	/**
 	 * Update the API key and secret or insert them if they do not exist in the db.
+	 *
 	 * @param $api_key string the API key from thetavideapi
 	 * @param $api_secret string the API secret from thetavideoapi
 	 */
@@ -170,6 +182,7 @@ class Thetavp_Database {
 
 	/**
 	 * Set the video state
+	 *
 	 * @param $theta_video_id string id of the video of which the state has to be changed
 	 * @param $state string new state
 	 */
@@ -184,6 +197,7 @@ class Thetavp_Database {
 
 	/**
 	 * Get video
+	 *
 	 * @param $id int id from the media library
 	 *
 	 * @return array|object|void|null array containing data or empty when there isn't any data

@@ -1,5 +1,5 @@
 <?php
-
+namespace Thetavp\cron;
 
 function cron_setup() {
 	add_filter( 'cron_schedules', 'add_minute_interval' );
@@ -22,9 +22,9 @@ function add_minute_interval( $schedules ) {
  * Callback for the wordpress event.
  */
 function check_status() {
-	require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-database.php';
+	require_once plugin_dir_path( __FILE__ ) . 'database.php';
 	require_once plugin_dir_path( __FILE__ ) . 'class-thetavp-api.php';
-	$db     = new Thetavp_Database();
+	$db     = new ThetavpDatabase();
 	$api    = new Thetavp_Api();
 	$videos = $db->get_videos_in_progress();
 	if ( empty( $videos ) ) {

@@ -1,4 +1,9 @@
 <?php
+namespace Thetavp\block;
+use Thetavp\Api\Api;
+use Thetavp\database\Database;
+use Thetavp\database\ThetavpDatabase;
+
 /**
  * This function renders the Gutenberg block.
  * It shows the video hosted by the Wordpress host or the one hosted using the Theta Video API depending on whether the
@@ -7,10 +12,8 @@
  * @param $attributes array, automatically applied by Wordpress
  */
 function render_dynamic_block( $attributes ) {
-	require_once 'class-thetavp-api.php';
-	require_once 'class-thetavp-database.php';
-	$api = new Thetavp_Api();
-	$db  = new Thetavp_Database();
+	$api = new Api();
+	$db  = Database::getInstance();
 
 	$video_obj    = $attributes['video'];
 
@@ -18,6 +21,7 @@ function render_dynamic_block( $attributes ) {
 	 * Show the video hosted on the blockchain if it has finished transcoding.
 	 */
 	$theta_video = $db->get_video( $video_obj['id'] );
+    error_log(print_r($theta_video, true));
 	ob_start();
 	if ( ! empty( $theta_video ) ) {
 		if ( $theta_video['status'] == "success" ) {
