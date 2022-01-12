@@ -1,4 +1,5 @@
 <?php
+
 namespace Thetavp\Api;
 
 use Thetavp\database\Database;
@@ -14,6 +15,7 @@ class Api {
 
 	/**
 	 * Constructor for the api class. Holds the db.
+	 *
 	 * @param $plugin_name string Plugin name
 	 */
 	public function __constructor( $plugin_name ) {
@@ -50,6 +52,7 @@ class Api {
 	/**
 	 *
 	 * Get the videos
+	 *
 	 * @param $request
 	 *
 	 * @return void|WP_Error
@@ -64,6 +67,7 @@ class Api {
 
 	/**
 	 * Get a single video for the rest API
+	 *
 	 * @param $request
 	 *
 	 * @return false|string|WP_Error
@@ -120,6 +124,7 @@ class Api {
 
 	/**
 	 * Query the api to see if the status changed or not.
+	 *
 	 * @param $theta_video_id string theta video id
 	 *
 	 * @return array|false  video status. Returns false on failure.
@@ -165,19 +170,20 @@ class Api {
 	 *
 	 * @return array|void returns an array on success, void on failure.
 	 */
-	public function upload_using_url(  $video_url ) {
+	public function upload_using_url( $video_url ) {
 		//don't allow running this function from localhost
-		if ($this->is_localhost()){
+		if ( $this->is_localhost() ) {
 			return;
 		}
-		$video_url = $this->change_http_to_https($video_url);
-		$url  = "https://api.thetavideoapi.com/video";
-		$keys = $this->db->get_keys();
+		$video_url = $this->change_http_to_https( $video_url );
+		$url       = "https://api.thetavideoapi.com/video";
+		$keys      = $this->db->get_keys();
 		if ( empty( $keys ) ) {
-			error_log("No keys have been set");
+			error_log( "No keys have been set" );
+
 			return;
 		}
-		$headers  = array(
+		$headers = array(
 			'x-tva-sa-id'     => $keys['key'],
 			'x-tva-sa-secret' => $keys['secret'],
 			'Content-Type'    => 'application/json'
@@ -187,7 +193,7 @@ class Api {
 			"source_uri"      => $video_url,
 			"playback_policy" => "public"
 		);
-		$response = wp_remote_post( $url, array( 'headers' => $headers, 'body' => wp_json_encode($body) ) );
+		$response = wp_remote_post( $url, array( 'headers' => $headers, 'body' => wp_json_encode( $body ) ) );
 		if ( is_wp_error( $response ) ) {
 			error_log( print_r( $response->get_error_message(), true ) );
 
@@ -199,17 +205,18 @@ class Api {
 
 
 		$state_object = $data->body->videos[0];
-		$id = $state_object->id;
-		$state = $state_object->state;
+		$id           = $state_object->id;
+		$state        = $state_object->state;
 
 		return array(
 			'theta_video_id' => $id,
-			'state' => $state
+			'state'          => $state
 		);
 	}
 
 	/**
 	 * Uploads the video using the curl binary octet stream.
+	 *
 	 * @param $url string endpoint of the api
 	 * @param $video string video object
 	 *
@@ -253,6 +260,7 @@ class Api {
 
 	/**
 	 * Transcodes the video as described in the examples
+	 *
 	 * @param $upload_id
 	 *
 	 * @return void
@@ -311,18 +319,45 @@ class Api {
 	}
 
 	/**
-	 * Changes http to https 
+	 * Changes http to https
+	 *
 	 * @param $url string url
 	 *
 	 * @return string url with HTTPS prefix
 	 */
-	function change_http_to_https($url){
-		$exploded = explode(":", $url);
-		if ($exploded[0] == "http"){
+	function change_http_to_https( $url ) {
+		$exploded = explode( ":", $url );
+		if ( $exploded[0] == "http" ) {
 			$exploded[0] = "https";
-			return join(":", $exploded);
+
+			return join( ":", $exploded );
 		}
+
 		return $url;
+	}
+
+	/**
+	 * Helper function to check if the shell is enabled or not
+	 * @return bool
+	 */
+	function shell_is_enabled() {
+		return function_exists( 'shell_exec' ) && shell_exec( "echo test" ) == "test";
+	}
+
+	/**
+	 * @return bool
+	 */
+	function shell_curl_is_enabled() {
+		if ( ! $this->shell_is_enabled() ) {
+			return false;
+		}
+
+		$result = shell_exec("curl");
+		if(strpos($result, "curl: try 'curl --help'") === false){
+			return false;
+		}
+
+		return true;
 	}
 
 }
